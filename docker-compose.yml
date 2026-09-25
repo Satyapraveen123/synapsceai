@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  # In-memory broker & state caching for LangGraph execution loops
+  redis:
+    image: redis:7.2-alpine
+    container_name: synapse-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Qdrant Vector Database for hybrid dense + BM25 sparse retrieval
+  qdrant:
+    image: qdrant/qdrant:v1.9.0
+    container_name: synapse-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__GRPC_PORT=6334
+
+  # FastAPI Backend Worker with Manim CE, LaTeX, Cairo, and SymPy
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: synapse-backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - QDRANT_HOST=qdrant
+      - QDRANT_PORT=6333
+      - MANIM_RENDER_QUALITY=medium_quality
+      - STORAGE_PATH=/app/media
+    volumes:
+      - ./backend/app:/app/app
+      - manim_media:/app/media
+    depends_on:
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+
+  # Interactive Web Frontend
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: synapse-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+    depends_on:
+      - backend
+
+volumes:
+  redis_data:
+  qdrant_data:
+  manim_media:

@@ -1,0 +1,74 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User account profile and mastery statistics",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "masteryScore": { "type": "number" }
+      },
+      "required": ["uid", "email"]
+    },
+    "SavedLesson": {
+      "title": "SavedLesson",
+      "description": "User created or bookmarked STEM lessons",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "lessonId": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "bloomLevel": { "type": "string" },
+        "primaryEquation": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["userId", "title"]
+    },
+    "VerifiedProof": {
+      "title": "VerifiedProof",
+      "description": "Deterministic SymPy proofs verified by user",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "proofTitle": { "type": "string" },
+        "isSound": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["userId", "proofTitle"]
+    },
+    "ChatSession": {
+      "title": "ChatSession",
+      "description": "Multi-turn Gemini chat conversations",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "modelUsed": { "type": "string" },
+        "role": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["userId"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "entity": "UserProfile",
+      "description": "User profile document"
+    },
+    "/users/{userId}/savedLessons/{lessonId}": {
+      "entity": "SavedLesson",
+      "description": "User's saved lessons"
+    },
+    "/users/{userId}/verifiedProofs/{proofId}": {
+      "entity": "VerifiedProof",
+      "description": "User's verified mathematical proofs"
+    },
+    "/users/{userId}/chatSessions/{sessionId}": {
+      "entity": "ChatSession",
+      "description": "User's chat histories"
+    }
+  }
+}

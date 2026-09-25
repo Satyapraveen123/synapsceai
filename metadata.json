@@ -1,0 +1,6 @@
+{
+  "name": "SynapseAI - STEM Video & Verification Engine",
+  "description": "Autonomous pipeline transforming math, physics, and STEM textbooks into synchronized Manim animations, SymPy step-by-step verification, grounded RAG tutoring, and Bloom's mastery graphs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
